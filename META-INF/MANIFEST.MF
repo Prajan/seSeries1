@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Series
-Bundle-SymbolicName: Series
+Bundle-Name: seSeries1
+Bundle-SymbolicName: seSeries1
 Bundle-Version: 1.0.0
 Require-Bundle: org.eclipse.imp.pdb.values,
  rascal
