@@ -19,9 +19,11 @@ case package(_,str sour): println("------------" + sour);
    }
 }
 public void countEmtpyLines(){
-  A = ["1","","b","c","","a"];
-  bool isEmptyinList(str s) = s == "a";
-  println("<isEmptyinList>");
+  int count  = 0;
+  for(s <- text)
+    if( /^$/ := s)
+      n +=1;
+  return n;
    
 }
 
@@ -29,13 +31,23 @@ public void calculateLinesOfCode(){
 //  println (sourceFilesForProject(|project://smallsql/|));
   int totalFileLines = 0;
   int perFileLines = 0;
+  countEmptyLines = 0;
+  countEmptyLinesTotal = 0;
   for (files <- sourceFilesForProject(|project://smallsql/|)){  
     perFileLines = 0;
+    countEmptyLines = 0;  
+    for(s <- readFileLines(files))
+      if( /^$/ := s)
+        countEmptyLines += 1;
+        countEmptyLinesTotal += 1;
+              
     totalFileLines += size(readFileLines(files));
     perFileLines += size(readFileLines(files));
     println("LOC in <files>  <perFileLines>");
+    println("Empty Lines of Codes <files> <countEmptyLines>");
   }
   println("Total LOC in project <totalFileLines>");
+  println("Total empty lines in project <countEmptyLinesTotal>");
   
 }
 
@@ -140,7 +152,7 @@ public int count(){
 text = ["andra", "moi", "ennepe","", "Mousa", "","","polutropon"];
   n = 0;
   for(s <- text)
-    if( /""/ := s)
+    if( /^$/ := s)
       n +=1;
   return n;
 }
