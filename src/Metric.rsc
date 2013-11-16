@@ -18,13 +18,13 @@ public set[Declaration]  CreateAst(){
 case package(_,str sour): println("------------" + sour);
    }
 }
+
 public void countEmtpyLines(){
   int count  = 0;
   for(s <- text)
     if( /^$/ := s)
       n +=1;
-  return n;
-   
+  return n;   
 }
 
 public void calculateLinesOfCode(){
