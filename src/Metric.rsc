@@ -140,7 +140,7 @@ public int count(){
 text = ["andra", "moi", "ennepe","", "Mousa", "","","polutropon"];
   n = 0;
   for(s <- text)
-    if( /""/ := s)
+    if( /^$/ := s)
       n +=1;
   return n;
 }
