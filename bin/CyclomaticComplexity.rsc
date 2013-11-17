@@ -6,12 +6,16 @@ import lang::java::jdt::m3::Core;
 import List;
 import Set;
 import IO;
-import Type;
 
-public set[Declaration] smallsqlAst = createAstsFromEclipseProject (|project://smallsql|, false);
-public set[Declaration] helloWorldAst = createAstsFromEclipseProject (|project://HelloWorld|, false);
+import LinesOfCodeCalculator;
 
-public void reportCyclomaticComplexity(set[Declaration] ast){
+public loc HelloWorldLoc = |project://HelloWorld|;
+public loc smallsqlLoc = |project://smallsql|;
+
+public set[Declaration] helloWorldAst = createAstsFromEclipseProject (HelloWorldLoc, false);
+public set[Declaration] smallsqlAst = createAstsFromEclipseProject (smallsqlLoc, false);
+
+public void reportProjectCyclComplexity(set[Declaration] ast){
 	int lowRisk = 0;
 	int modRisk = 0;
 	int highRisk = 0;
@@ -31,14 +35,22 @@ public void reportCyclomaticComplexity(set[Declaration] ast){
 	'	Amount of methods with very high risk: <veryHighRisk>");
 }
 
-public list[tuple[str name, int complexity, loc location, int lofc]] getComplexityPerUnit(set[Declaration] ast){
-    list[tuple[str name, int complexity, loc location, int lofc]] result = [];
+public list[tuple[str name, loc location, int complexity, int lofc]] getComplexityPerUnit(set[Declaration] ast){
+    list[tuple[str name, loc location, int complexity, int lofc]] result = [];
+    int index;
 	visit(ast){
-		case method(_, str name, _, _, Statement impl) : {
-			visit(impl) {
-				case \block(_): result += <name, calculateComplexity(impl), impl@src, size(readFileLines(impl@src))>;
-			}	
-		 }  
+	    case class(str name, _, _, list[Declaration] body) :{
+	        index = 0;
+	    	visit(body){
+				case method(_, str methodName, _, _, Statement impl) : {
+					result += <methodName, body[index]@src, calculateComplexity(impl), calculateUnitLoc(body[index]@src)>;
+					if(index >= size(body) -1)
+						index = 0;
+					else
+						index += 1;
+				}
+			}  
+		}
 	}
 	return result;
 }
@@ -66,13 +78,4 @@ public int calculateComplexity(Statement stat){
 		default:
 			return 0;
 	}
-}
-
-// sum of complexity of all the methods in the AST
-public int calcTotalComplexity(set[Declaration] ast){
-	int complexity = 0;
-	visit(ast){
-		case method(_, _, _, _, Statement impl) : complexity += calculateComplexity(impl);
-   	}
-	return complexity;
 }
