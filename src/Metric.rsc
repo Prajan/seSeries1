@@ -75,7 +75,7 @@ public void calculateLinesOfCode(){
   }
   countLines = countFileLinesTotal - countEmptyLinesTotal - countCommentedLinesTotal - countImpPackLinesTotal;
   for (x <- FP.LOC){
-    if (12 in x ){  //countLines/1000
+    if (countLines/1000 in x ){  //countLines/1000
       println("Rank is <FP.rank[cnt]> \nMan Years is <FP.MY[cnt]>");
       fpFound = false;
     }
@@ -130,20 +130,14 @@ public void calculateGeneral(){
 
 public void findCodeDuplication(){
  A = readFileLines(|project://smallsql/src/smallsql/database/CreateFile.java|);
- //println("<A[0..5]> ..  <size(A)>");
- int i = 0 , j = 0 , m = 0, n= 0;
- for (i, m <- [0..size(A)]){
-   for (j,n <- [5..size(A)]){
-     if (i == m)  m += 1; 
-     if (j == n)  n += 1;
-    //println("this <slice(A, i, 6)>");  
-    
-    // println("<A[i..j] == A[m..n]>");
-   println("<i>  <j> .... <m>   <n>");
-   }
- }
  
- 
+
+ int limit = 5;
+ for (int I, int J <- [0..size(A)])
+ println("<I> <J>");
+ //if(j - 1 == limit)
+  // compareFrom = slice(A,0,5);
+ //println("<slice(A,0,5)>");
  
  
  // for (e <- sourceFilesForProject(|project://smallsql/|)){
