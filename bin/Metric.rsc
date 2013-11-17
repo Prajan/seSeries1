@@ -75,7 +75,7 @@ public void calculateLinesOfCode(){
   }
   countLines = countFileLinesTotal - countEmptyLinesTotal - countCommentedLinesTotal - countImpPackLinesTotal;
   for (x <- FP.LOC){
-    if (12 in x ){  //countLines/1000
+    if (countLines/1000 in x ){  //countLines/1000
       println("Rank is <FP.rank[cnt]> \nMan Years is <FP.MY[cnt]>");
       fpFound = false;
     }
@@ -129,65 +129,30 @@ public void calculateGeneral(){
 
 
 public void findCodeDuplication(){
+ list[str] compareFrom;
  A = readFileLines(|project://smallsql/src/smallsql/database/CreateFile.java|);
- //println("<A[0..5]> ..  <size(A)>");
- int i = 0 , j = 0 , m = 0, n= 0;
- for (i, m <- [0..size(A)]){
-   for (j,n <- [5..size(A)]){
-     if (i == m)  m += 1; 
-     if (j == n)  n += 1;
-    //println("this <slice(A, i, 6)>");  
-    
-    // println("<A[i..j] == A[m..n]>");
-   println("<i>  <j> .... <m>   <n>");
+ 
+ for (i  <- [0..size(A)]){
+   for (j  <- [0..size(A)], j - i == 6){
+      compareFrom = A[i..j];
+      compareDuplication(compareFrom, i , j );
    }
  }
- 
- 
- 
- 
- // for (e <- sourceFilesForProject(|project://smallsql/|)){
- // line0to6 = readFileLines(e);
- // println("<line0to6[0..5]>");
-//  }
+  
 }
 
+public void compareDuplication(list [str] compareFrom, int i , int j ){
+  B = readFileLines(|project://smallsql/src/smallsql/database/CreateFile.java|);
+  for (m  <- [i+1..size(B)]){
+    for (n  <- [j+1..size(B)], n - m == 6){
+      compareWith = B[m..n];
+      if (compareFrom == compareWith){
+        println("Hey duplicates i j <i + 1> <j + 1> m n  <m + 1> <n + 1> <compareWith>");
+      }  
+    }  
+  }
+}
 
-/*
-q = {1,2,3};
-for (e <- q){
-  println("<e>");
-};
-
-v = {|ptoject://smallsql/src/smallsql/database/a.java|,|project://smallsql/src/smallsql/database/2.java|,|project://smallsql/src/smallsql/database/Column.java|};
-for (e <- v){
-  println("<v>");
-};
-
-
-readFileLines(|project://smallsql/src/smallsql/database/Column.java|);
- size(readFileLines(|project://smallsql/src/smallsql/database/Column.java|));
-*/
-
-
- public void printTotalNmbOfMethods(){
-    println("project smallsql has got a total of <totalMethods()> methods.");    
- }
- 
- public int totalMethods() = size([e | e <- createM3FromEclipseProject(|project://smallsql|)@containment, /java\+method+/ := e.from.scheme]);
- 	
- public int countTotalLoc(){
- 	return countProjectTotalLoc(createM3FromEclipseProject(|project://smallsql|));
- }
- 
- public int totalLines(){
-    int lines = 0;
- for(e <- createM3FromEclipseProject(|project://smallsql|)){
-    lines += size(readFile(e.from));
- }
- return lines;
- 
- }
  
 
 public int count(){
@@ -230,5 +195,18 @@ cnt +=1;
  }
  
  
+ public list[str] test1 (){
+ A = readFileLines(|project://smallsql/src/smallsql/database/CreateFile.java|);
+ result = [];
+ for (t <- A){
+   if ( (!/^$/ := t) && ( !/import|package/ := t) ) result += t;
+  // if ( !/import|package/ := t)  result += t;
+
+ }  
+return result;
+
+ }
+ 
+
  
  

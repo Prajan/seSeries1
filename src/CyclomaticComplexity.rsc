@@ -31,12 +31,12 @@ public void reportCyclomaticComplexity(set[Declaration] ast){
 	'	Amount of methods with very high risk: <veryHighRisk>");
 }
 
-public list[tuple[str name, int complexity, loc location]] getComplexityPerUnit(set[Declaration] ast){
-    list[tuple[str name, int complexity, loc location]] result = [];
+public list[tuple[str name, int complexity, loc location, int lofc]] getComplexityPerUnit(set[Declaration] ast){
+    list[tuple[str name, int complexity, loc location, int lofc]] result = [];
 	visit(ast){
 		case method(_, str name, _, _, Statement impl) : {
 			visit(impl) {
-				case \block(_): result += <name, calculateComplexity(impl), impl@src>;
+				case \block(_): result += <name, calculateComplexity(impl), impl@src, size(readFileLines(impl@src))>;
 			}	
 		 }  
 	}
@@ -76,12 +76,3 @@ public int calcTotalComplexity(set[Declaration] ast){
    	}
 	return complexity;
 }
-   
-   
-   
-   
-   
-   
-   
-   
-   
