@@ -4,7 +4,9 @@ import lang::java::jdt::m3::AST;
 import lang::java::m3::Core;
 import lang::java::jdt::m3::Core; 
 import List;
+import Set;
 import IO;
+import Type;
 
 public set[Declaration] smallsqlAst = createAstsFromEclipseProject (|project://smallsql|, false);
 public set[Declaration] helloWorldAst = createAstsFromEclipseProject (|project://HelloWorld|, false);
@@ -22,19 +24,23 @@ public void reportCyclomaticComplexity(set[Declaration] ast){
 		veryHighRisk += 1;
 	}
 	
-	println("Methods CC Report:
+	println("Methods Risk evaluation:
 	'	Amount of methods with low risk: <lowRisk>
 	'	Amount of methods with moderate risk: <modRisk>
 	'	Amount of methods with high risk: <highRisk>
 	'	Amount of methods with very high risk: <veryHighRisk>");
 }
 
-public list[tuple[str name, int complexity]] getComplexityPerUnit(set[Declaration] ast){
-    list[tuple[str name, int complexity]] res = [];
+public list[tuple[str name, int complexity, loc location]] getComplexityPerUnit(set[Declaration] ast){
+    list[tuple[str name, int complexity, loc location]] result = [];
 	visit(ast){
-		case method(_, str name, _, _, Statement impl) : res += <name, calculateComplexity(impl)>;	   
+		case method(_, str name, _, _, Statement impl) : {
+			visit(impl) {
+				case \block(_): result += <name, calculateComplexity(impl), impl@src>;
+			}	
+		 }  
 	}
-	return res;
+	return result;
 }
 
 public int calculateComplexity(Statement stat){
@@ -61,6 +67,7 @@ public int calculateComplexity(Statement stat){
 			return 0;
 	}
 }
+
 // sum of complexity of all the methods in the AST
 public int calcTotalComplexity(set[Declaration] ast){
 	int complexity = 0;
@@ -69,3 +76,12 @@ public int calcTotalComplexity(set[Declaration] ast){
    	}
 	return complexity;
 }
+   
+   
+   
+   
+   
+   
+   
+   
+   
