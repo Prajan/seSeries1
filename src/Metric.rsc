@@ -110,11 +110,12 @@ public void calculateLinesOfCode(){
    }
   if (fpFound) 
     println("Rank is -- \nMan Years is greater 160");
-    println("Total LOC in project <countFileLinesTotal>");
-    println("Total empty lines in project <countEmptyLinesTotal>");
-    println("Total commented lines in project <countCommentedLinesTotal>");
-    println("Total import/package lines in project <countImpPackLinesTotal>");
-    println("Total real LOC <countLines>");
+    
+  println("Total LOC in project <countFileLinesTotal>");
+  println("Total empty lines in project <countEmptyLinesTotal>");
+  println("Total commented lines in project <countCommentedLinesTotal>");
+  println("Total import/package lines in project <countImpPackLinesTotal>");
+  println("Total real LOC <countLines>");
   
 }
 
@@ -173,17 +174,20 @@ println("Final duplicates count <finalcnt>");
 
 public int compareDuplication(list [str] compareFrom, int i , int j ){
   int cntDuplicates = 0;
-  B = trimSpaceEmptyImport(readFileLines(|project://smallsql/src/smallsql/database/CreateFile.java|));
-  println("i   <i + 1>       J  <j + 1>");
-  for (m  <- [i+1..size(B)]){
-    for (n  <- [j+1..size(B)], n - m == 6){
-    println("m <m> n <n>   <B[m..n]>");
-      compareWith = B[m..n];
-      if (compareFrom == compareWith){
-        println("Hey duplicates i j <i + 1> <j + 1> m n  <m + 1> <n + 1> <compareWith>");
-        cntDuplicates += 1;
+  for (rfiles <- sourceFilesForProject(|project://smallsql/|)){
+    B = trimSpaceEmptyImport(readFileLines(rfiles));
+ // B = trimSpaceEmptyImport(readFileLines(|project://smallsql/src/smallsql/database/CreateFile.java|));
+    println("i   <i + 1>       J  <j + 1>");
+    for (m  <- [i+1..size(B)]){
+      for (n  <- [j+1..size(B)], n - m == 6){
+        println("m <m> n <n>   <B[m..n]>");
+        compareWith = B[m..n];
+        if (compareFrom == compareWith){
+          println("Hey duplicates i j <i + 1> <j + 1> m n  <m + 1> <n + 1> <compareWith>");
+          cntDuplicates += 1;
+        }  
       }  
-    }  
+    }
   }
   return cntDuplicates;
 }
