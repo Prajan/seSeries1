@@ -47,8 +47,9 @@ public void calculateLinesOfCode(){
   
   project1 = |project://smallsql|;
   project2 = |project://hsqldb231|;
+  project3 = |project://HelloWorld|;
   
-  for (files <- sourceFilesForProject(project1)){  
+  for (files <- sourceFilesForProject(project3)){  
     countFileLines = 0;
     countEmptyLines = 0;  
     countCommentedLines = 0;

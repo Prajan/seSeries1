@@ -11,9 +11,10 @@ import IO;
 
 import LinesOfCodeCalculator;
 import CyclomaticComplexity;
+import Ranking;
 
 public loc HelloWorldLoc = |project://HelloWorld|;
-public loc smallsqlLoc = |project://smallsql|;
+public loc smallsqlLoc = |project://smallsql|; 
 
 public void startAnalysis(loc project){
 	println("Analysis started. Please wait..");
@@ -26,6 +27,16 @@ public void reportProjectMetrics(loc project){
 	int totalLoc = calculateProjectLoc(project);
 	ast = createAstsFromEclipseProject(project, false);
 	
+	println("========================= Begin report ======================================");
+	println("");
+	// report on lines of code
+	locRanking = determineLocRanking(totalLoc);
+	println("Analysis of function point by lines of code:");
+	println("	The system has got a total size of <totalLoc> lines of code.
+			'	This gives a ranking of \'<locRanking.rank>\' which indicates that the man years is <locRanking.mYears>.");
+	
+	println("");
+	println("");
 	// report on CC
 	int lowRiskLoc = 0;
 	int modRiskLoc = 0;
@@ -44,22 +55,14 @@ public void reportProjectMetrics(loc project){
 	int highRiskRatio = round((toReal(highRiskLoc) / totalLoc) * 100);
 	int veryHighRiskRatio = round((toReal(veryHighRiskLoc) / totalLoc) * 100);
 	
-	println("Risk evaluation:
+	println("Analysis of complexity:
 	'	Percentage of low risk:		<lowRiskRatio>%
 	'	Percentage of moderate risk:	<modRiskRatio>%
 	'	Percentage of high risk:	<highRiskRatio>%
 	'	Percentage of very high risk:	<veryHighRiskRatio>%
 	'	This gives the project a \'<determineCyclComRanking(lowRiskRatio, modRiskRatio, highRiskRatio, veryHighRiskRatio)>\' for Cyclomatic Complexity.");
+	
+	println("");
+	println("========================== End report ======================================");
 }
 
-public str determineCyclComRanking(int low, int moderate, int high, int veryHigh){
-	if(moderate <= 25 && high == 0 && veryHigh == 0)
-		return "++";
-	if(moderate <= 30 && high <= 5 && veryHigh == 0)
-		return "+";
-	if(moderate <= 40 && high <= 10 && veryHigh == 0)
-		return "o";
-	if(moderate <= 50 && high <= 15 && veryHigh <= 5)
-		return "-";
-	return "--";
-}

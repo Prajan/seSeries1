@@ -7,6 +7,7 @@ import lang::java::jdt::m3::Core;
 import List;
 import IO;
 import Set;
+import String;
 
 import demo::common::Crawl;
 
@@ -46,18 +47,42 @@ public void calculateLinesOfCode(){
   
   project1 = |project://smallsql|;
   project2 = |project://hsqldb231|;
+  project3 = |project://HelloWorld|;
   
-  for (files <- sourceFilesForProject(project1)){  
+  for (files <- sourceFilesForProject(project3)){  
     countFileLines = 0;
     countEmptyLines = 0;  
     countCommentedLines = 0;
     countImpPackLines = 0;
+    isIncomment = false;
     
     for(s <- readFileLines(files)){
-      if( /^$/ := s)
+      if( /^$/ := s  ||  /^\s*$/ := s)
         countEmptyLines += 1;
-      if( /\*/ := s)
-        countCommentedLines += 1;
+      
+      
+      if( /\/\// := s) isIncomment = true;
+      if(/\/\*/ := s) {
+        if(/\*\// := s)
+       	  continue;
+       	else{
+       	  isInComment = true;
+       	  continue;
+       	}
+      }
+      if(/\*\// := s) {
+        isInComment = true;
+       	continue;
+      }
+      if (isIncomment){
+        countCommentedLines += 1; 
+        isIncomment = false;
+      }
+      
+        
+        
+   //   if( /\*/ := s)
+   //     countCommentedLines += 1;
       if( /import|package/ := s)
         countImpPackLines += 1;
       }
@@ -84,12 +109,12 @@ public void calculateLinesOfCode(){
  
    }
   if (fpFound) 
-      println("Rank is -- \nMan Years is greater 160");
-  println("Total LOC in project <countFileLinesTotal>");
-  println("Total empty lines in project <countEmptyLinesTotal>");
-  println("Total commented lines in project <countCommentedLinesTotal>");
-  println("Total import/package lines in project <countImpPackLinesTotal>");
-  println("Total empty lines in project without empty lines <countLines>");
+    println("Rank is -- \nMan Years is greater 160");
+    println("Total LOC in project <countFileLinesTotal>");
+    println("Total empty lines in project <countEmptyLinesTotal>");
+    println("Total commented lines in project <countCommentedLinesTotal>");
+    println("Total import/package lines in project <countImpPackLinesTotal>");
+    println("Total real LOC <countLines>");
   
 }
 
@@ -108,8 +133,6 @@ public void calculateLinesOfCodeUsingCrawl(){
     println("LOC in <rfiles>  <perFileLines>");
   }
   println("Total LOC in project <totalFileLines>");
-
-
 
 }
 
@@ -130,29 +153,47 @@ public void calculateGeneral(){
 
 public void findCodeDuplication(){
  list[str] compareFrom;
- A = readFileLines(|project://smallsql/src/smallsql/database/CreateFile.java|);
- 
- for (i  <- [0..size(A)]){
-   for (j  <- [0..size(A)], j - i == 6){
-      compareFrom = A[i..j];
-      compareDuplication(compareFrom, i , j );
+ int cntDuplicates = 0;
+ int finalcnt = 0;
+ for (rfiles <- sourceFilesForProject(|project://smallsql/|)){
+   println("rfiles <rfiles>"); 
+   A = trimSpaceEmptyImport(readFileLines(rfiles));
+  // A = trimSpaceEmptyImport(readFileLines(|project://smallsql/src/smallsql/database/CreateFile.java|));
+   for (i  <- [0..size(A)]){
+     for (j  <- [0..size(A)], j - i == 6){
+       compareFrom = A[i..j];
+  //    println("Comapre From <compareFrom>");
+       int cntdupl = compareDuplication(compareFrom, i , j );
+       finalcnt += cntdupl;
+     }
    }
- }
-  
+ }  
+println("Final duplicates count <finalcnt>");  
 }
 
-public void compareDuplication(list [str] compareFrom, int i , int j ){
-  B = readFileLines(|project://smallsql/src/smallsql/database/CreateFile.java|);
+public int compareDuplication(list [str] compareFrom, int i , int j ){
+  int cntDuplicates = 0;
+  B = trimSpaceEmptyImport(readFileLines(|project://smallsql/src/smallsql/database/CreateFile.java|));
+  println("i   <i + 1>       J  <j + 1>");
   for (m  <- [i+1..size(B)]){
     for (n  <- [j+1..size(B)], n - m == 6){
+    println("m <m> n <n>   <B[m..n]>");
       compareWith = B[m..n];
       if (compareFrom == compareWith){
         println("Hey duplicates i j <i + 1> <j + 1> m n  <m + 1> <n + 1> <compareWith>");
+        cntDuplicates += 1;
       }  
     }  
   }
+  return cntDuplicates;
 }
 
+public list[str] trimSpaceEmptyImport(temp ){
+  result = [];
+  for(t <- temp)
+    if ( (!/^$/ := t) && ( !/import|package/ := t) ) result += trim(t);
+  return result;
+}
  
 
 public int count(){
@@ -167,43 +208,24 @@ text = readFileLines(|project://smallsql/src/smallsql/database/StoreNoCurrentRow
   return n;
 }
  
- 
- public void  check(){
- 
-//lrel[str LOC, str rank, str MY] FP = [<"0..66","++","0 to 8">, <"66..246","+","8 to 30">, <"246..665","o","30 to 80">, <"665..1310","-","80 to 160">, <"1310..","--","gr 160">];
 
- //FP = [[[0..66],"++","0 to 8"], [[66..246],"+","8 to 30"], [[246..665],"o","30 to 80"], [[665..1310],"-","80 to 160"], [[1310..1313],"--","gr 160"]];
-
-FP = [[[0..66],"++","0 to 8"], [[66..246],"+","8 to 30"]];
-lrel[list[int] pra, str rank, str MY] SFP = [<[0..66],"++","0 to 8">, <[66..246],"+","8 to 30">, <[68..246],"+","8 to 30">, <[2466..270],"+","8 to 30">];
-   int cnt = 0;
-   for (x <- SFP.pra){
-       if (67 in x){
-         println(" <2 in x> <SFP.rank[cnt] > <cnt>");
-         
-         }  
-cnt +=1;
-   }
-     
-   
-   /*  if (x < 250)
-       result +=x;
-       println("<last(result)>");
-       
-       return result ; */ 
-   
- }
  
  
  public list[str] test1 (){
- A = readFileLines(|project://smallsql/src/smallsql/database/CreateFile.java|);
- result = [];
- for (t <- A){
-   if ( (!/^$/ := t) && ( !/import|package/ := t) ) result += t;
-  // if ( !/import|package/ := t)  result += t;
+ //A = readFileLines(|project://smallsql/src/smallsql/database/CreateFile.java|);
+ //result = [];
+ //for (t <- A){
+ //  if ( (!/^$/ := t) && ( !/import|package/ := t) ) result += t;
+  
+// }  
+//return result;
 
- }  
-return result;
+O = [" pra", "jan ", " this is a ", " kallu", " men "];
+return for(i <- O){
+         append trim(i);
+       }
+
+
 
  }
  
