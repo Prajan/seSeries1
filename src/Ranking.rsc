@@ -4,6 +4,7 @@ import List;
 
 lrel[list[int] lofc, str rank, str mYears] locRanking = [<[0..66],"++","0 to 8">, <[66..246],"+","8 to 30">, <[246..665],"o","30 to 80">, <[665..1310],"-","80 to 160">];
 
+
 public tuple[str rank, str mYears] determineLocRanking(int number){
     int index = 0;
 	for (r <- locRanking.lofc)
@@ -25,4 +26,6 @@ public str determineCyclComRanking(int low, int moderate, int high, int veryHigh
 	if(moderate <= 50 && high <= 15 && veryHigh <= 5)
 		return "-";
 	return "--";
+}
+public void detemineUnitSizeRanking() {
 }

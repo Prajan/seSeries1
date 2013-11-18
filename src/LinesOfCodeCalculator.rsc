@@ -6,9 +6,7 @@ import lang::java::jdt::m3::Core;
 public loc HelloWorldLoc = |project://HelloWorld|;
 public loc smallsqlLoc = |project://smallsql|;
 
-public int calculateProjectLoc(loc project){
-	//model = createM3FromEclipseProject(project);
-	//units = methods(model);	
+public int calculateProjectLoc(loc project){	
 	int totalLoc = 0;
 	for(u <- sourceFilesForProject(project))
 		totalLoc += calculateUnitLoc(u);

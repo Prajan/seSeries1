@@ -82,3 +82,23 @@ map[str language, int count] countSourceLocPerLanguage(M3 projectModel) {
 //	visit(impl) {
 				// case \block(_): result += <name, calculateComplexity(impl), impl@src, size(readFileLines(impl@src))>;
 			//}	
+			
+public void reportProjectCyclComplexity(set[Declaration] ast){
+	int lowRisk = 0;
+	int modRisk = 0;
+	int highRisk = 0;
+	int veryHighRisk = 0;
+	
+	for(cc <- getComplexityPerUnit(ast)){
+		if(cc.complexity <= 10) { lowRisk += 1; continue; }
+		if(cc.complexity > 10 && cc.complexity <= 20) { modRisk += 1; continue; }
+		if(cc.complexity > 20 && cc.complexity <= 50) { highRisk += 1; continue; }
+		veryHighRisk += 1;
+	}
+	
+	println("Methods Risk evaluation:
+	'	Amount of methods with low risk: <lowRisk>
+	'	Amount of methods with moderate risk: <modRisk>
+	'	Amount of methods with high risk: <highRisk>
+	'	Amount of methods with very high risk: <veryHighRisk>");
+}
