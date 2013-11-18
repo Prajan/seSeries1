@@ -78,3 +78,7 @@ map[str language, int count] countSourceLocPerLanguage(M3 projectModel) {
   }
   return result;
 }
+
+//	visit(impl) {
+				// case \block(_): result += <name, calculateComplexity(impl), impl@src, size(readFileLines(impl@src))>;
+			//}	

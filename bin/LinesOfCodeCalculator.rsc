@@ -18,10 +18,15 @@ public int calculateUnitLoc(loc location){
     for(l <- readFileLines(location)){
     	if(/^\s*$/ := l || /^$/ := l || /\/\// := l || /import|package/ := l || isInComment)
        		continue;        		
-       	if(/\/\*/ := l){
-       		isInComment = true;
-       		continue;
-       	}        	
+       	if(/\/\*/ := l) {
+       		if(/\*\// := l)
+       			continue;
+       		else{
+       			isInComment = true;
+       			continue;
+       		}
+       	}
+       	       	
        	if(/\*\// := l) {
        		isInComment = false;
        		continue;
