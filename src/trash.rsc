@@ -102,3 +102,66 @@ public void reportProjectCyclComplexity(set[Declaration] ast){
 	'	Amount of methods with high risk: <highRisk>
 	'	Amount of methods with very high risk: <veryHighRisk>");
 }
+
+public int calculateProjectLoc(loc project){	
+	int totalLoc = 0;
+	for(u <- sourceFilesForProject(project))
+		totalLoc += calculateUnitLoc(u);
+	return totalLoc;
+}
+
+public int calculateUnitLoc(loc location){
+    int linesCount = 0;	 
+	bool isInComment = false;
+    for(l <- readFileLines(location)){   
+    	if(/^\s*$/ := l || /^$/ := l || /\/\// := l || /import|package/ := l)
+       		continue;
+       	if(/\/\*/ := l) {
+       		if(/\*\// := l)
+       			continue;       			
+       		else{
+       			isInComment = true;
+       			continue;
+       		}
+       	}       	       	
+       	if(/\*\// := l) {
+       		isInComment = false;
+       		continue;
+       	}
+       	if(isInComment)
+       		continue;
+       	linesCount += 1;        	
+    } 
+    return linesCount;
+    
+   
+}
+
+/* 
+   for(m <- methods(model)){
+	    result = [];	 
+		for(l <- readFileLines(m)){  		   
+    		if(/^\s*$/ := l || /^$/ := l || /\/\// := l)
+       			continue;
+     		if(/\/\*/ := l) {
+       			if(/\*\// := l)
+       				continue;       			
+       			else{
+       				isInComment = true;
+       				continue;
+       			}
+       		}       	       	
+       		if(/\*\// := l) {
+       			isInComment = false;
+       			continue;
+       		}
+       		if(isInComment)
+       			continue;   
+       		l = trim(l); 
+        	result += l;		          		 	
+    	}
+    	
+        if(size(result) < 6)           
+			continue;
+			 */
+

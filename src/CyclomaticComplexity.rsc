@@ -23,7 +23,7 @@ public list[tuple[str name, loc location, int complexity, int lofc]] getComplexi
 	        index = 0;
 	    	visit(body){
 				case method(_, str methodName, _, _, Statement impl) : {
-					result += <methodName, body[index]@src, calculateComplexity(impl), calculateUnitLoc(body[index]@src)>;
+					result += <methodName, body[index]@src, calculateComplexity(impl), calculateLoc(body[index]@src)>;
 					if(index >= size(body) -1)
 						index = 0;
 					else

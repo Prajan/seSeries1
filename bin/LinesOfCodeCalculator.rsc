@@ -1,21 +1,27 @@
 module LinesOfCodeCalculator
 
 import IO;
+import List;
+import String;
 import lang::java::jdt::m3::Core;
 
 public loc HelloWorldLoc = |project://HelloWorld|;
 public loc smallsqlLoc = |project://smallsql|;
 
-public int calculateProjectLoc(loc project){	
+public int calculateProjectLoc(set[loc] projectFiles){
 	int totalLoc = 0;
-	for(u <- sourceFilesForProject(project))
-		totalLoc += calculateUnitLoc(u);
+	for(f <- projectFiles)
+		totalLoc += calculateLoc(f);
 	return totalLoc;
 }
 
-public int calculateUnitLoc(loc location){
-    int linesCount = 0;	 
+public int calculateLoc(loc location){
+	return size(getCleanCode(location));
+}
+
+public list[str] getCleanCode(loc location){
 	bool isInComment = false;
+	list[str] cleanCode = [];
     for(l <- readFileLines(location)){   
     	if(/^\s*$/ := l || /^$/ := l || /\/\// := l || /import|package/ := l)
        		continue;
@@ -33,7 +39,8 @@ public int calculateUnitLoc(loc location){
        	}
        	if(isInComment)
        		continue;
-       	linesCount += 1;        	
-    } 
-    return linesCount;
-}
+       	trim(l);
+       	cleanCode += l;
+    }
+    return cleanCode;
+ }

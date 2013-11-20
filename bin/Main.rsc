@@ -22,9 +22,12 @@ public void startAnalysis(loc project){
 
 }
 
+public M3 getM = createM3FromEclipseProject(HelloWorldLoc);
+
 public void reportProjectMetrics(loc project){
-	
-	int totalLoc = calculateProjectLoc(project);
+	model = createM3FromEclipseProject(project);
+	int totalLoc = calculateProjectLoc(files(model));
+	int totalMethodsLoc = calculateProjectLoc(methods(model));
 	ast = createAstsFromEclipseProject(project, false);
 	
 	println("========================= Begin report ======================================");
@@ -37,6 +40,7 @@ public void reportProjectMetrics(loc project){
 	
 	println("");
 	println("");
+	
 	// report on CC
 	int lowRiskLoc = 0;
 	int modRiskLoc = 0;
@@ -50,10 +54,10 @@ public void reportProjectMetrics(loc project){
 		veryHighRiskLoc += cc.lofc;
 	}
 	
-	int lowRiskRatio = round((toReal(lowRiskLoc) / totalLoc) * 100);
-	int modRiskRatio = round((toReal(modRiskLoc) / totalLoc) * 100);
-	int highRiskRatio = round((toReal(highRiskLoc) / totalLoc) * 100);
-	int veryHighRiskRatio = round((toReal(veryHighRiskLoc) / totalLoc) * 100);
+	int lowRiskRatio = round((toReal(lowRiskLoc) / totalMethodsLoc) * 100);
+	int modRiskRatio = round((toReal(modRiskLoc) / totalMethodsLoc) * 100);
+	int highRiskRatio = round((toReal(highRiskLoc) / totalMethodsLoc) * 100);
+	int veryHighRiskRatio = round((toReal(veryHighRiskLoc) / totalMethodsLoc) * 100);
 	
 	println("Analysis of complexity:
 	'	Percentage of low risk:		<lowRiskRatio>%

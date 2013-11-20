@@ -12,35 +12,12 @@ public loc HelloWorldLoc = |project://HelloWorld|;
 
 public void analyseMethod(loc project){
 	list[list[str]] matched = [];
-	list[str] result = [];
 	list[str] resultTemp = [];
 	model = createM3FromEclipseProject(project);
 	
 	bool isInComment = false;
 	for(m <- methods(model)){
-	    result = [];	 
-		for(l <- readFileLines(m)){  		   
-    		if(/^\s*$/ := l || /^$/ := l || /\/\// := l)
-       			continue;
-       		if(/\/\*/ := l) {
-       			if(/\*\// := l)
-       				continue;       			
-       			else{
-       				isInComment = true;
-       				continue;
-       			}
-       		}       	       	
-       		if(/\*\// := l) {
-       			isInComment = false;
-       			continue;
-       		}
-       		if(isInComment)
-       			continue;   
-       		l = trim(l); 
-        	result += l;		          		 	
-    	}
-    	
-        if(size(result) < 6)           
+        if(calculateLoc(m) < 6)           
 			continue;
 		//println(size(result));
 		//println(result);
