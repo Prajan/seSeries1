@@ -8,32 +8,74 @@ import List;
 import String;
 import LinesOfCodeCalculator;
 
-public loc HelloWorldLoc = |project://HelloWorld|;
+public loc HelloWorldLoc = |project://HellowWorld|;
+public loc smallsql = |project://smallsql|;
 
 public void analyseMethod(loc project){
 	list[list[str]] matched = [];
 	list[str] resultTemp = [];
 	model = createM3FromEclipseProject(project);
 	
+	
+    int finalcnt = 0;
+	
 	bool isInComment = false;
 	for(m <- methods(model)){
 		result = getCleanCode(m);
         if(size(result) < 6)           
 			continue;
-		//println(size(result));
-		//println(result);
 		
 		int offset = 6;
 		for (i  <- [0..size(result)]){
      		for (j  <- [0..size(result)], j - i == offset){
       			 compareFrom = result[i..j];
       			 // after comparision if there is a match then look at the next line...
-      			 
-      			 println("<i> <j> <compareFrom>");  			 
+      			 int cntdupl = compareDuplication(model, compareFrom, i , j, offset);
+                 finalcnt += cntdupl;
+               //  println("Final cnt increment <finalcnt>");
+      			 //println("<i> <j> <compareFrom>");  			 
       		}
       	}
-    }	
+    }
+    println("Final duplicates count <finalcnt>");	
 }
+
+
+public int compareDuplication(model, list [str] compareFrom, int i , int j, int offset ){
+  int cntDuplicates = 0;
+  //model = createM3FromEclipseProject(project);
+  
+  for(m <- methods(model)){
+    result = getCleanCode(m);
+    
+    if(size(result) < 6)           
+	  continue;
+    
+    for (x  <- [i+1..size(result)]){
+      for (y  <- [j+1..size(result)], y - x == offset){
+       if (x > size(result) || y > size(result)) 
+         continue;
+        compareWith = result[x..y];
+        if (compareFrom == compareWith){
+          println("Hey duplicates i j <i + 1> <j + 1> x y  <x + 1> <y + 1> <compareWith>");
+          cntDuplicates += 1;
+        }  
+      }  
+    }
+  }
+  return cntDuplicates;
+}
+
+
+
+
+
+
+
+
+
+
+
 
 //this is not completed yet!!!!
 public int calculateDublicates(set[loc] projectFiles, int minDuplicate){	

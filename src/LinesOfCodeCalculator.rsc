@@ -39,8 +39,8 @@ public list[str] getCleanCode(loc location){
        	}
        	if(isInComment)
        		continue;
-       	trim(l);
-       	cleanCode += l;
+      // 	trim(l);
+       	cleanCode += trim(l);
     }
     return cleanCode;
  }
