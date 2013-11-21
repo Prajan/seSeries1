@@ -17,7 +17,8 @@ public void analyseMethod(loc project){
 	
 	bool isInComment = false;
 	for(m <- methods(model)){
-        if(calculateLoc(m) < 6)           
+		result = getCleanCode(m);
+        if(size(result) < 6)           
 			continue;
 		//println(size(result));
 		//println(result);
@@ -33,3 +34,54 @@ public void analyseMethod(loc project){
       	}
     }	
 }
+
+//this is not completed yet!!!!
+public int calculateDublicates(set[loc] projectFiles){
+	int count = 0;
+	int dupThreshold = 6;
+	int tempDupThreshold = 0;	
+	int searchSourceLoc = 0;	
+	list[str] searchSource = [];
+	list[str] searchPattern = [];
+	list[str] searchList = [];
+	list[str] duplicates = [];
+	list[tuple[list[str], list[loc]]] foundDuplicates = [];
+	
+	int totalFiles = size(projectFiles);
+	for(f <- [0..totalFiles]){
+		searchSource = getCleanCode(projectFiles[f]);
+		searchSourceLoc = size(searchSource);
+		if(searchSourceLoc < dupThreshold)           
+			continue;		
+		bool keepSearching = false;		
+		for(i <- [0..searchSourceLoc]){	
+			tempDupThreshold = dupThreshold;
+			keepSearching = true;			
+			while(keepSearching){			
+				searchPattern = searchSource[i..tempDupThreshold];
+				searchList = searchSource[i..tempDupThreshold];
+				if(searchPattern := searchList){
+      				 duplicates = searchPattern;
+      				 tempDupThreshold += 1;
+      			}
+      		}
+		}
+		tempDupThreshold = dupThreshold;			
+	}	
+	return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
