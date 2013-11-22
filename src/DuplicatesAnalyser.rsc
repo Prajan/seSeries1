@@ -6,6 +6,7 @@ import lang::java::jdt::m3::Core;
 import IO;
 import List;
 import String;
+import Set;
 import LinesOfCodeCalculator;
 
 public loc HelloWorldLoc = |project://HellowWorld|;
@@ -15,47 +16,60 @@ public void analyseMethod(loc project){
 	list[list[str]] matched = [];
 	list[str] resultTemp = [];
 	model = createM3FromEclipseProject(project);
-	
-	
+
     int finalcnt = 0;
+    bool isInComment = false;
+	toListmodels = toList(methods(model));
 	
-	bool isInComment = false;
-	for(m <- methods(model)){
-		result = getCleanCode(m);
-        if(size(result) < 6)           
-			continue;
+	int cntFiles = 0;
 		
+	for(m <- toListmodels){
+		result = getCleanCode(m);
+	//	println(" First loop Size <size(toListmodels)>   ");
+        if(size(result) < 6){
+          cntFiles += 1;
+          continue;
+        }  
+	//	println(" First loop Size <size(toListmodels)>  List of Methods: <toListmodels> ");
 		int offset = 6;
+		
 		for (i  <- [0..size(result)]){
      		for (j  <- [0..size(result)], j - i == offset){
       			 compareFrom = result[i..j];
+      			// println(" count <cntFiles> <m>");
       			 // after comparision if there is a match then look at the next line...
-      			 int cntdupl = compareDuplication(model, compareFrom, i , j, offset);
+      			 int cntdupl = compareDuplication(toListmodels, compareFrom, i , j, offset, cntFiles);
                  finalcnt += cntdupl;
-               //  println("Final cnt increment <finalcnt>");
-      			 //println("<i> <j> <compareFrom>");  			 
+                 //println("Final cnt increment <finalcnt>");
+      			 //println("<i> <j> <compareFrom>");   analyseMethod(HelloWorldLoc);  			 
       		}
       	}
+    cntFiles += 1;
     }
-    println("Final duplicates count <finalcnt>");	
+    println("Final duplicates count <finalcnt> cntFiles <cntFiles>");	
 }
 
 
-public int compareDuplication(model, list [str] compareFrom, int i , int j, int offset ){
+public int compareDuplication(toListmodels, list [str] compareFrom, int i , int j, int offset, int cntFiles ){
   int cntDuplicates = 0;
   //model = createM3FromEclipseProject(project);
-  
-  for(m <- methods(model)){
+//  println("Later count of files <cntFiles>");
+  fromListModels = drop(cntFiles, toListmodels);
+//  println(" Second method Size <size(fromListModels)> CntFiles <cntFiles>");
+  for(m <- fromListModels){
     result = getCleanCode(m);
     
     if(size(result) < 6)           
 	  continue;
-    
+  //  println("Second list <fromListModels>");
     for (x  <- [i+1..size(result)]){
       for (y  <- [j+1..size(result)], y - x == offset){
+       compareWith = [];
        if (x > size(result) || y > size(result)) 
          continue;
+         
         compareWith = result[x..y];
+   //     println("Comparewith <compareWith>");
         if (compareFrom == compareWith){
           println("Hey duplicates i j <i + 1> <j + 1> x y  <x + 1> <y + 1> <compareWith>");
           cntDuplicates += 1;
@@ -65,12 +79,6 @@ public int compareDuplication(model, list [str] compareFrom, int i , int j, int 
   }
   return cntDuplicates;
 }
-
-
-
-
-
-
 
 
 

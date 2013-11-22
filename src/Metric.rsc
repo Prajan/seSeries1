@@ -157,7 +157,7 @@ public void findCodeDuplication(){
  int cntDuplicates = 0;
  int finalcnt = 0;
  for (rfiles <- sourceFilesForProject(|project://smallsql/|)){
-   println("rfiles <rfiles>"); 
+ //  println("rfiles <rfiles>"); 
    A = trimSpaceEmptyImport(readFileLines(rfiles));
   // A = trimSpaceEmptyImport(readFileLines(|project://smallsql/src/smallsql/database/CreateFile.java|));
    for (i  <- [0..size(A)]){
@@ -177,10 +177,12 @@ public int compareDuplication(list [str] compareFrom, int i , int j ){
   for (rfiles <- sourceFilesForProject(|project://smallsql/|)){
     B = trimSpaceEmptyImport(readFileLines(rfiles));
  // B = trimSpaceEmptyImport(readFileLines(|project://smallsql/src/smallsql/database/CreateFile.java|));
-    println("i   <i + 1>       J  <j + 1>");
+ //   println("i   <i + 1>       J  <j + 1>");
     for (m  <- [i+1..size(B)]){
       for (n  <- [j+1..size(B)], n - m == 6){
-        println("m <m> n <n>   <B[m..n]>");
+       // println("m <m> n <n>   <B[m..n]>");
+       if (m > size(B) || n > size(B)) 
+         continue;
         compareWith = B[m..n];
         if (compareFrom == compareWith){
           println("Hey duplicates i j <i + 1> <j + 1> m n  <m + 1> <n + 1> <compareWith>");
@@ -215,19 +217,23 @@ text = readFileLines(|project://smallsql/src/smallsql/database/StoreNoCurrentRow
 
  
  
- public list[str] test1 (){
- //A = readFileLines(|project://smallsql/src/smallsql/database/CreateFile.java|);
- //result = [];
- //for (t <- A){
- //  if ( (!/^$/ := t) && ( !/import|package/ := t) ) result += t;
-  
-// }  
-//return result;
+ public  void test1 (){
+  B = [1,2,3,4];
+  G = B;
+  int x = 0;
 
-O = [" pra", "jan ", " this is a ", " kallu", " men "];
-return for(i <- O){
-         append trim(i);
-       }
+  for (i <- B){
+  
+  println("cnt x <x>");
+  
+  println(drop(x, G));
+  x += 1; 
+  
+    
+  
+  
+  }
+
 
 
 
