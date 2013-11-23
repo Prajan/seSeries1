@@ -21,8 +21,6 @@ public void startAnalysis(loc project){
 	println("Analysis started. Please wait..");
 	int totalExecTime = cpuTime(void() {reportProjectMetrics(project);});
 	println("Total execution time <toReal(totalExecTime)/1000000000> seconds.");
-	
-
 }
 
 public M3 getM = createM3FromEclipseProject(HelloWorldLoc);
@@ -49,7 +47,8 @@ public void reportProjectMetrics(loc project){
 
 	println("");
 	println("");
-		// report on CC and unit size
+	
+	// report on CC and unit size
 	generateUnitSizeReport(totalMethodsLoc, ccAnalysisResult);
 	
 	println("");

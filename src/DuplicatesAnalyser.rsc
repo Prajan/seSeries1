@@ -10,7 +10,7 @@ import Set;
 import LinesOfCodeCalculator;
 import DateTime;
 
-public loc HelloWorldLoc = |project://HellowWorld|;
+public loc HelloWorldLoc = |project://HelloWorld|;
 public loc smallsql = |project://smallsql|;
 
 public void analyseMethod(loc project){
