@@ -8,70 +8,56 @@ import List;
 import String;
 import Set;
 import LinesOfCodeCalculator;
+import DateTime;
 
 public loc HelloWorldLoc = |project://HellowWorld|;
 public loc smallsql = |project://smallsql|;
 
 public void analyseMethod(loc project){
-	list[list[str]] matched = [];
-	list[str] resultTemp = [];
-	model = createM3FromEclipseProject(project);
-
+    list[tuple[list[str] resultReadFile,loc locationFile]] finalResult = [];
     int finalcnt = 0;
     bool isInComment = false;
-	toListmodels = toList(methods(model));
+    int cntFiles = 0;
+    int offset = 6;
+    
+    model = createM3FromEclipseProject(project);	
+    toListmodels = toList(methods(model));
+    println("Starting time <now()>");		
+    
+    for(t <- toListmodels){
+	  result = getCleanCode(t);
+      if(size(result) < offset)
+        continue;
+      finalResult += <result, t>;
+	}
 	
-	int cntFiles = 0;
-		
-	for(m <- toListmodels){
-		result = getCleanCode(m);
-	//	println(" First loop Size <size(toListmodels)>   ");
-        if(size(result) < 6){
-          cntFiles += 1;
-          continue;
-        }  
-	//	println(" First loop Size <size(toListmodels)>  List of Methods: <toListmodels> ");
-		int offset = 6;
-		
-		for (i  <- [0..size(result)]){
-     		for (j  <- [0..size(result)], j - i == offset){
-      			 compareFrom = result[i..j];
-      			// println(" count <cntFiles> <m>");
-      			 // after comparision if there is a match then look at the next line...
-      			 int cntdupl = compareDuplication(toListmodels, compareFrom, i , j, offset, cntFiles);
-                 finalcnt += cntdupl;
-                 //println("Final cnt increment <finalcnt>");
-      			 //println("<i> <j> <compareFrom>");   analyseMethod(HelloWorldLoc);  			 
-      		}
+	for(m <- finalResult){
+      for (i  <- [0..size(m.resultReadFile)]){
+        for (j  <- [0..size(m.resultReadFile)], j - i == offset){
+      	  compareFrom = m.resultReadFile[i..j];
+          int cntdupl = compareDuplication(finalResult, compareFrom, i , j, offset, cntFiles);
+          finalcnt += cntdupl;
       	}
-    cntFiles += 1;
+      }
+      cntFiles += 1;
     }
-    println("Final duplicates count <finalcnt> cntFiles <cntFiles>");	
+    println("Final duplicates count <finalcnt> cntFiles <cntFiles>");
+    println("Ending time <now()>");	
 }
 
-
-public int compareDuplication(toListmodels, list [str] compareFrom, int i , int j, int offset, int cntFiles ){
+public int compareDuplication(finalResult, list [str] compareFrom, int i , int j, int offset, int cntFiles ){
   int cntDuplicates = 0;
-  //model = createM3FromEclipseProject(project);
-//  println("Later count of files <cntFiles>");
-  fromListModels = drop(cntFiles, toListmodels);
-//  println(" Second method Size <size(fromListModels)> CntFiles <cntFiles>");
-  for(m <- fromListModels){
-    result = getCleanCode(m);
-    
-    if(size(result) < 6)           
-	  continue;
-  //  println("Second list <fromListModels>");
-    for (x  <- [i+1..size(result)]){
-      for (y  <- [j+1..size(result)], y - x == offset){
-       compareWith = [];
-       if (x > size(result) || y > size(result)) 
-         continue;
-         
-        compareWith = result[x..y];
-   //     println("Comparewith <compareWith>");
+  fromListModels = drop(cntFiles, finalResult);
+  for(n <- fromListModels){
+    for (x  <- [i+1..size(n.resultReadFile)]){
+      for (y  <- [j+1..size(n.resultReadFile)], y - x == offset){
+        compareWith = [];
+        if (x > size(n.resultReadFile) || y > size(n.resultReadFile)) 
+          continue;
+        compareWith = n.resultReadFile[x..y];
+
         if (compareFrom == compareWith){
-          println("Hey duplicates i j <i + 1> <j + 1> x y  <x + 1> <y + 1> <compareWith>");
+          println("Hey duplicates  <compareWith>");
           cntDuplicates += 1;
         }  
       }  
@@ -79,6 +65,8 @@ public int compareDuplication(toListmodels, list [str] compareFrom, int i , int 
   }
   return cntDuplicates;
 }
+
+
 
 
 
