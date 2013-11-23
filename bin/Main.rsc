@@ -29,7 +29,7 @@ public void reportProjectMetrics(loc project){
 	
 	int totalLoc = calculateProjectLoc(files(model));	
 	int totalMethodsLoc = calculateProjectLoc(methods(model));	
-	ccAnalysisResult = getComplexityPerUnit(ast);
+	list[tuple[str name, loc location, int complexity, int lofc]] ccAnalysisResult = getComplexityPerUnit(ast);
 	
 	println("========================= Begin report ======================================");
 	println("");
