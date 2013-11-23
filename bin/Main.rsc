@@ -23,8 +23,6 @@ public void startAnalysis(loc project){
 	println("Total execution time <toReal(totalExecTime)/1000000000> seconds.");
 }
 
-public M3 getM = createM3FromEclipseProject(HelloWorldLoc);
-
 public void reportProjectMetrics(loc project){
 	model = createM3FromEclipseProject(project);
 	ast = createAstsFromEclipseProject(project, false);	
