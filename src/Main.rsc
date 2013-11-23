@@ -4,6 +4,7 @@ import lang::java::jdt::m3::AST;
 import lang::java::jdt::m3::Core; 
 import lang::java::m3::Core;
 import util::Math;
+import util::Benchmark; 
 import Number;
 import List;
 import IO;
@@ -18,7 +19,9 @@ public loc smallsqlLoc = |project://smallsql|;
 
 public void startAnalysis(loc project){
 	println("Analysis started. Please wait..");
-	reportProjectMetrics(project);
+	int totalExecTime = cpuTime(void() {reportProjectMetrics(project);});
+	println("Total execution time <toReal(totalExecTime)/1000000000> seconds.");
+	
 
 }
 
@@ -26,28 +29,47 @@ public M3 getM = createM3FromEclipseProject(HelloWorldLoc);
 
 public void reportProjectMetrics(loc project){
 	model = createM3FromEclipseProject(project);
-	int totalLoc = calculateProjectLoc(files(model));
-	int totalMethodsLoc = calculateProjectLoc(methods(model));
-	ast = createAstsFromEclipseProject(project, false);
+	ast = createAstsFromEclipseProject(project, false);	
+	
+	int totalLoc = calculateProjectLoc(files(model));	
+	int totalMethodsLoc = calculateProjectLoc(methods(model));	
+	ccAnalysisResult = getComplexityPerUnit(ast);
 	
 	println("========================= Begin report ======================================");
 	println("");
+	
 	// report on lines of code
+	generateLocReport(totalLoc);
+	
+	println("");
+	println("");	
+	
+	// report on CC
+	generateComplexityReport(totalMethodsLoc, ccAnalysisResult);
+
+	println("");
+	println("");
+		// report on CC and unit size
+	generateUnitSizeReport(totalMethodsLoc, ccAnalysisResult);
+	
+	println("");
+	println("========================== End report ======================================");
+}
+
+public void generateLocReport(int totalLoc){
 	locRanking = determineLocRanking(totalLoc);
 	println("Analysis of function point by lines of code:");
 	println("	The system has got a total size of <totalLoc> lines of code.
 			'	This gives a ranking of \'<locRanking.rank>\' which indicates that the man years is <locRanking.mYears>.");
-	
-	println("");
-	println("");
-	
-	// report on CC
+}
+
+public void generateComplexityReport(int totalMethodsLoc, list[tuple[str name, loc location, int complexity, int lofc]] ccAnalysisResult){
 	int lowRiskLoc = 0;
 	int modRiskLoc = 0;
 	int highRiskLoc = 0;
-	int veryHighRiskLoc = 0;
+	int veryHighRiskLoc = 0;	
 	
-	for(cc <- getComplexityPerUnit(ast)){
+	for(cc <- ccAnalysisResult){
 		if(cc.complexity <= 10) { lowRiskLoc += cc.lofc; continue; }
 		if(cc.complexity > 10 && cc.complexity <= 20) { modRiskLoc += cc.lofc; continue; }
 		if(cc.complexity > 20 && cc.complexity <= 50) { highRiskLoc += cc.lofc; continue; }
@@ -65,8 +87,31 @@ public void reportProjectMetrics(loc project){
 	'	Percentage of high risk:	<highRiskRatio>%
 	'	Percentage of very high risk:	<veryHighRiskRatio>%
 	'	This gives the project a \'<determineCyclComRanking(lowRiskRatio, modRiskRatio, highRiskRatio, veryHighRiskRatio)>\' for Cyclomatic Complexity.");
+}
+
+public void generateUnitSizeReport(int totalMethodsLoc, list[tuple[str name, loc location, int complexity, int lofc]] ccAnalysisResult){
+	int lowRiskSize = 0;
+	int modRiskSize = 0;
+	int highRiskSize = 0;
+	int veryHighRiskSize = 0;	
 	
-	println("");
-	println("========================== End report ======================================");
+	for(cc <- ccAnalysisResult){
+		if(cc.lofc <= 10) { lowRiskSize += cc.lofc; continue; }
+		if(cc.lofc > 10 && cc.lofc <= 20) { modRiskSize += cc.lofc; continue; }
+		if(cc.lofc > 20 && cc.lofc <= 50) { highRiskSize += cc.lofc; continue; }
+		veryHighRiskSize += cc.lofc;
+	}
+	
+	int lowRiskRatio = round((toReal(lowRiskSize) / totalMethodsLoc) * 100);
+	int modRiskRatio = round((toReal(modRiskSize) / totalMethodsLoc) * 100);
+	int highRiskRatio = round((toReal(highRiskSize) / totalMethodsLoc) * 100);
+	int veryHighRiskRatio = round((toReal(veryHighRiskSize) / totalMethodsLoc) * 100);
+	
+	println("Analysis of units size:
+	'	Percentage of low risk:		<lowRiskRatio>%
+	'	Percentage of moderate risk:	<modRiskRatio>%
+	'	Percentage of high risk:	<highRiskRatio>%
+	'	Percentage of very high risk:	<veryHighRiskRatio>%
+	'	This gives the project a \'<detemineUnitSizeRanking(lowRiskRatio, modRiskRatio, highRiskRatio, veryHighRiskRatio)>\' for Units Size.");
 }
 

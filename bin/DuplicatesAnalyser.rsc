@@ -6,34 +6,72 @@ import lang::java::jdt::m3::Core;
 import IO;
 import List;
 import String;
+import Set;
 import LinesOfCodeCalculator;
+import DateTime;
 
-public loc HelloWorldLoc = |project://HelloWorld|;
+public loc HelloWorldLoc = |project://HellowWorld|;
+public loc smallsql = |project://smallsql|;
 
 public void analyseMethod(loc project){
-	list[list[str]] matched = [];
-	list[str] resultTemp = [];
-	model = createM3FromEclipseProject(project);
+    list[tuple[list[str] resultReadFile,loc locationFile]] finalResult = [];
+    int finalcnt = 0;
+    bool isInComment = false;
+    int cntFiles = 0;
+    int offset = 6;
+    
+    model = createM3FromEclipseProject(project);	
+    toListmodels = toList(methods(model));
+    println("Starting time <now()>");		
+    
+    for(t <- toListmodels){
+	  result = getCleanCode(t);
+      if(size(result) < offset)
+        continue;
+      finalResult += <result, t>;
+	}
 	
-	bool isInComment = false;
-	for(m <- methods(model)){
-		result = getCleanCode(m);
-        if(size(result) < 6)           
-			continue;
-		//println(size(result));
-		//println(result);
-		
-		int offset = 6;
-		for (i  <- [0..size(result)]){
-     		for (j  <- [0..size(result)], j - i == offset){
-      			 compareFrom = result[i..j];
-      			 // after comparision if there is a match then look at the next line...
-      			 
-      			 println("<i> <j> <compareFrom>");  			 
-      		}
+	for(m <- finalResult){
+      for (i  <- [0..size(m.resultReadFile)]){
+        for (j  <- [0..size(m.resultReadFile)], j - i == offset){
+      	  compareFrom = m.resultReadFile[i..j];
+          int cntdupl = compareDuplication(finalResult, compareFrom, i , j, offset, cntFiles);
+          finalcnt += cntdupl;
       	}
-    }	
+      }
+      cntFiles += 1;
+    }
+    println("Final duplicates count <finalcnt> cntFiles <cntFiles>");
+    println("Ending time <now()>");	
 }
+
+public int compareDuplication(finalResult, list [str] compareFrom, int i , int j, int offset, int cntFiles ){
+  int cntDuplicates = 0;
+  fromListModels = drop(cntFiles, finalResult);
+  for(n <- fromListModels){
+    for (x  <- [i+1..size(n.resultReadFile)]){
+      for (y  <- [j+1..size(n.resultReadFile)], y - x == offset){
+        compareWith = [];
+        if (x > size(n.resultReadFile) || y > size(n.resultReadFile)) 
+          continue;
+        compareWith = n.resultReadFile[x..y];
+
+        if (compareFrom == compareWith){
+          println("Hey duplicates  <compareWith>");
+          cntDuplicates += 1;
+        }  
+      }  
+    }
+  }
+  return cntDuplicates;
+}
+
+
+
+
+
+
+
 
 //this is not completed yet!!!!
 public int calculateDublicates(set[loc] projectFiles, int minDuplicate){	
