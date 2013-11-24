@@ -17,6 +17,7 @@ import Ranking;
 
 public loc HelloWorldLoc = |project://HelloWorld|;
 public loc smallsqlLoc = |project://smallsql|; 
+public loc hsqldbLoc = |project://hsqldb-2.3.1|;
 
 public void startAnalysis(loc project){
 	println("Analysis started. Please wait..");

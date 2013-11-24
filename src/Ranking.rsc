@@ -17,8 +17,8 @@ public tuple[str rank, str mYears] determineLocRanking(int number){
 }
 
 public str determineDupsRanking(int percentage){
-	for(r <- duplicatesRanking.percentage)
-		if(percentage in r)
+	for(r <- duplicatesRanking)
+		if(percentage in r.percentage)
 			return r.rank;
     return "--";
 }
