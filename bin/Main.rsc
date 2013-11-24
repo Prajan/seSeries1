@@ -33,7 +33,7 @@ public void reportProjectMetrics(loc project){
 			
 	int totalLoc = calculateProjectLoc(srcFiles);	
 	int totalMethodsLoc = calculateProjectLoc(srcMethods);	
-	int totalDublications = 0;//calculateDuplications(srcMethods, 6);
+	int totalDublications = calculateDuplications(srcMethods, 6);
 	list[tuple[str name, loc location, int complexity, int lofc]] ccAnalysisResult = getComplexityPerUnit(ast, true);
 	
 	println("========================= Begin report ======================================");
@@ -52,10 +52,13 @@ public void reportProjectMetrics(loc project){
 	println("");
 	
 	// report on CC and unit size
-	//generateUnitSizeReport(totalMethodsLoc, ccAnalysisResult);
+	generateUnitSizeReport(totalMethodsLoc, ccAnalysisResult);
 	
+	println("");
+	println("");
 	
-	println("Duplicates: <totalDublications>");
+	// report on dupplicates
+	generateDuplicateReport(totalMethodsLoc, totalDublications);
 	
 	println("");
 	println("========================== End report ======================================");
@@ -119,6 +122,9 @@ public void generateUnitSizeReport(int totalMethodsLoc, list[tuple[str name, loc
 	'	Percentage of very high risk:	<veryHighRiskRatio>%
 	'	This gives the project a \'<detemineUnitSizeRanking(lowRiskRatio, modRiskRatio, highRiskRatio, veryHighRiskRatio)>\' for Units Size.");
 }
-public void generateDuplicateReport(int totalDuplicates){
-	
+public void generateDuplicateReport(int totalMethodsLoc, int totalDuplicates){	
+    int percentage = round((toReal(totalDuplicates)/totalMethodsLoc) * 100);
+	println("Analysis of code duplicates:");
+	println("	The system has got a total duplicates of <totalDuplicates> lines of code.
+			'	This gives a ranking of \'<determineDupsRanking(percentage)>\' for code duplicates.");
 }

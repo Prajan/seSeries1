@@ -6,9 +6,6 @@ import lang::java::jdt::m3::Core;
 
 import SourceCodeFilter;
 
-public loc HelloWorldLoc = |project://HelloWorld|;
-public loc smallsqlLoc = |project://smallsql|;
-
 public int calculateProjectLoc(set[loc] projectFiles){
 	int totalLoc = 0;
 	for(f <- projectFiles)

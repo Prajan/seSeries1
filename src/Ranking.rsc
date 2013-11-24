@@ -3,6 +3,7 @@ module Ranking
 import List;
 
 lrel[list[int] lofc, str rank, str mYears] locRanking = [<[0..66],"++","0 to 8">, <[66..246],"+","8 to 30">, <[246..665],"o","30 to 80">, <[665..1310],"-","80 to 160">];
+lrel[list[int] percentage, str rank] duplicatesRanking = [<[0..3],"++">, <[3..5],"+">, <[5..10],"o">, <[10..20],"-">];
 
 public tuple[str rank, str mYears] determineLocRanking(int number){
     int index = 0;
@@ -13,6 +14,13 @@ public tuple[str rank, str mYears] determineLocRanking(int number){
      	index += 1;
     }
     return <"--", "greater 160">;
+}
+
+public str determineDupsRanking(int percentage){
+	for(r <- duplicatesRanking.percentage)
+		if(percentage in r)
+			return r.rank;
+    return "--";
 }
 
 public str determineCyclComRanking(int low, int moderate, int high, int veryHigh){

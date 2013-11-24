@@ -12,9 +12,6 @@ import DateTime;
 import LinesOfCodeCalculator;
 import SourceCodeFilter;
 
-public loc HelloWorldLoc = |project://HelloWorld|;
-public loc smallsql = |project://smallsql|;
-
 
 public int calculateDuplications(set[loc] projectMethods, int minThreshold){
 	list[tuple[list[str] code, list[loc] locations]] foundDuplicates = [];

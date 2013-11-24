@@ -10,9 +10,6 @@ import IO;
 import SourceCodeFilter;
 import LinesOfCodeCalculator;
 
-public loc HelloWorldLoc = |project://HelloWorld|;
-public loc smallsqlLoc = |project://smallsql|;
-
 public set[Declaration] helloWorldAst = createAstsFromEclipseProject (HelloWorldLoc, false);
 public set[Declaration] smallsqlAst = createAstsFromEclipseProject (smallsqlLoc, false);
 
