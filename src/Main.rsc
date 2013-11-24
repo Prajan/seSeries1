@@ -5,7 +5,7 @@ import lang::java::jdt::m3::Core;
 import lang::java::m3::Core;
 import util::Math;
 import util::Benchmark; 
-import Number;
+
 import List;
 import IO;
 
@@ -125,6 +125,7 @@ public void generateUnitSizeReport(int totalMethodsLoc, list[tuple[str name, loc
 public void generateDuplicateReport(int totalMethodsLoc, int totalDuplicates){	
     int percentage = round((toReal(totalDuplicates)/totalMethodsLoc) * 100);
 	println("Analysis of code duplicates:");
-	println("	The system has got a total duplicates of <totalDuplicates> lines of code.
+	println("	The system has got a total duplicates of <totalDuplicates> lines of code. 
+			'	It is <percentage>% of the total size of the project.
 			'	This gives a ranking of \'<determineDupsRanking(percentage)>\' for code duplicates.");
 }

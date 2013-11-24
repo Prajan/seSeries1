@@ -10,9 +10,6 @@ import IO;
 import SourceCodeFilter;
 import LinesOfCodeCalculator;
 
-public set[Declaration] helloWorldAst = createAstsFromEclipseProject (HelloWorldLoc, false);
-public set[Declaration] smallsqlAst = createAstsFromEclipseProject (smallsqlLoc, false);
-
 public list[tuple[str name, loc location, int complexity, int lofc]] getComplexityPerUnit(set[Declaration] ast, bool scanSrcOnly){
     list[tuple[str name, loc location, int complexity, int lofc]] result = [];
 	visit(ast){
