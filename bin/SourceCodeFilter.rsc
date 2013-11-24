@@ -22,7 +22,7 @@ public set[loc] getSrcMethods(set[loc] sourceFiles){
 
 
 public bool isSrcEntity(loc entity) = 
-	startsWith(entity.path, "/src/") && !contains(entity.path, "/generated/")
+	contains(entity.path, "/src/") && !contains(entity.path, "/generated/")
 	&& !contains(entity.path, "/sample/") && !contains(entity.path, "/samples/")
 	&& !contains(entity.path, "/test/") && !contains(entity.path, "/tests/") 
 	&& !contains(entity.path, "/junit/") && !contains(entity.path, "/junits/");

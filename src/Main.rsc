@@ -17,7 +17,7 @@ import Ranking;
 
 public loc HelloWorldLoc = |project://HelloWorld|;
 public loc smallsqlLoc = |project://smallsql|; 
-public loc hsqldbLoc = |project://hsqldb-2.3.1|;
+public loc hsqldbLoc = |project://hsqldb|;
 
 public void startAnalysis(loc project){
 	println("Analysis started. Please wait..");
@@ -31,13 +31,13 @@ public void reportProjectMetrics(loc project){
 	
 	set[loc] srcFiles = getSrcFiles(model);
 	set[loc] srcMethods = getSrcMethods(srcFiles);
-			
+		
 	int totalLoc = calculateProjectLoc(srcFiles);	
 	int totalMethodsLoc = calculateProjectLoc(srcMethods);	
 	int totalDublications = calculateDuplications(srcMethods, 6);
 	list[tuple[str name, loc location, int complexity, int lofc]] ccAnalysisResult = getComplexityPerUnit(ast, true);
 	
-	println("========================= Begin report ======================================");
+	println("====================================== Begin report ======================================");
 	println("");
 	
 	// report on lines of code
@@ -62,7 +62,7 @@ public void reportProjectMetrics(loc project){
 	generateDuplicateReport(totalMethodsLoc, totalDublications);
 	
 	println("");
-	println("========================== End report ======================================");
+	println("====================================== End report ======================================");
 }
 
 public void generateLocReport(int totalLoc){
