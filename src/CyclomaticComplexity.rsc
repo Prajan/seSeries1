@@ -7,6 +7,7 @@ import List;
 import Set;
 import IO;
 
+import SourceCodeFilter;
 import LinesOfCodeCalculator;
 
 public loc HelloWorldLoc = |project://HelloWorld|;
@@ -15,21 +16,14 @@ public loc smallsqlLoc = |project://smallsql|;
 public set[Declaration] helloWorldAst = createAstsFromEclipseProject (HelloWorldLoc, false);
 public set[Declaration] smallsqlAst = createAstsFromEclipseProject (smallsqlLoc, false);
 
-public list[tuple[str name, loc location, int complexity, int lofc]] getComplexityPerUnit(set[Declaration] ast){
+public list[tuple[str name, loc location, int complexity, int lofc]] getComplexityPerUnit(set[Declaration] ast, bool scanSrcOnly){
     list[tuple[str name, loc location, int complexity, int lofc]] result = [];
-    int index;
 	visit(ast){
-	    case class(str name, _, _, list[Declaration] body) :{
-	        index = 0;
-	    	visit(body){
-				case method(_, str methodName, _, _, Statement impl) : {
-					result += <methodName, body[index]@src, calculateComplexity(impl), calculateLoc(body[index]@src)>;
-					if(index >= size(body) -1)
-						index = 0;
-					else
-						index += 1;
-				}
-			}  
+		case method(_, str methodName, _, _, Statement impl) : {
+			if(scanSrcOnly){
+				if(isSrcEntity(impl@src))
+					result += <methodName, impl@src, calculateComplexity(impl), calculateLoc(impl@src)>;
+			}								
 		}
 	}
 	return result;
@@ -53,10 +47,17 @@ public int calculateComplexity(Statement stat){
 			return 1 + calculateComplexity(body);
 		case \for(_, _, _, Statement body):
 			return 1 + calculateComplexity(body);
+		case \do(Statement body, _):
+			return calculateComplexity(body);
 		case \while(_, Statement body):
 			return 1 + calculateComplexity(body);
-		case \throw(_):
-			return 1;
+		case  \try(Statement body, list[Statement] catchClauses):
+			return calculateComplexity(body) + (0| it + calculateComplexity(s) | s <- catchClauses);	
+		case  \try(Statement body, list[Statement] catchClauses, Statement \finally) :
+			return calculateComplexity(body) + (0| it + calculateComplexity(s) | s <- catchClauses)
+				+ calculateComplexity(\finally);	
+		case \catch(Declaration exception, Statement body):
+			return calculateComplexity(body);
 		default:
 			return 0;
 	}

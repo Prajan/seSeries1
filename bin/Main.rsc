@@ -9,8 +9,9 @@ import Number;
 import List;
 import IO;
 
-
+import SourceCodeFilter;
 import LinesOfCodeCalculator;
+import DuplicatesCalculator;
 import CyclomaticComplexity;
 import Ranking;
 
@@ -27,9 +28,13 @@ public void reportProjectMetrics(loc project){
 	model = createM3FromEclipseProject(project);
 	ast = createAstsFromEclipseProject(project, false);	
 	
-	int totalLoc = calculateProjectLoc(files(model));	
-	int totalMethodsLoc = calculateProjectLoc(methods(model));	
-	list[tuple[str name, loc location, int complexity, int lofc]] ccAnalysisResult = getComplexityPerUnit(ast);
+	set[loc] srcFiles = getSrcFiles(model);
+	set[loc] srcMethods = getSrcMethods(srcFiles);
+			
+	int totalLoc = calculateProjectLoc(srcFiles);	
+	int totalMethodsLoc = calculateProjectLoc(srcMethods);	
+	int totalDublications = 0;//calculateDuplications(srcMethods, 6);
+	list[tuple[str name, loc location, int complexity, int lofc]] ccAnalysisResult = getComplexityPerUnit(ast, true);
 	
 	println("========================= Begin report ======================================");
 	println("");
@@ -47,7 +52,10 @@ public void reportProjectMetrics(loc project){
 	println("");
 	
 	// report on CC and unit size
-	generateUnitSizeReport(totalMethodsLoc, ccAnalysisResult);
+	//generateUnitSizeReport(totalMethodsLoc, ccAnalysisResult);
+	
+	
+	println("Duplicates: <totalDublications>");
 	
 	println("");
 	println("========================== End report ======================================");
@@ -111,4 +119,6 @@ public void generateUnitSizeReport(int totalMethodsLoc, list[tuple[str name, loc
 	'	Percentage of very high risk:	<veryHighRiskRatio>%
 	'	This gives the project a \'<detemineUnitSizeRanking(lowRiskRatio, modRiskRatio, highRiskRatio, veryHighRiskRatio)>\' for Units Size.");
 }
-
+public void generateDuplicateReport(int totalDuplicates){
+	
+}
