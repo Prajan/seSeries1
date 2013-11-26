@@ -14,7 +14,7 @@ import SourceCodeFilter;
 
 
 public int calculateDuplications(set[loc] projectMethods, int minThreshold){
-	list[tuple[list[str] code, list[loc] locations]] foundDuplicates = [];
+	set[tuple[list[str] code, list[loc] locations]] foundDuplicates = {};
 	list[tuple[loc location, list[str] sourceCode]] filterdMethods = [<m, getCleanCode(m)> | m <- projectMethods, size(getCleanCode(m)) > minThreshold];//methods(model)
 	list[loc] dupLocations = [];
 	
@@ -36,11 +36,8 @@ public int calculateDuplications(set[loc] projectMethods, int minThreshold){
 				searchPatternBegin += 1;
      			searchPatternEnd += 1; 
 			}
-			else{
-				for(l <- dupLocations){
-					if (size([d | d <- foundDuplicates, d.code == searchPattern]) == 0)
-						foundDuplicates += 	<searchPattern, dupLocations>;
-				}
+			else{			
+				foundDuplicates += 	<searchPattern, dupLocations>;				
 				break;
 			}
     	}      				

@@ -52,7 +52,7 @@ public void reportProjectMetrics(loc project){
 	println("");
 	println("");
 	
-	// report on CC and unit size
+	// unit size
 	generateUnitSizeReport(totalMethodsLoc, ccAnalysisResult);
 	
 	println("");
@@ -116,7 +116,7 @@ public void generateUnitSizeReport(int totalMethodsLoc, list[tuple[str name, loc
 	int highRiskRatio = round((toReal(highRiskSize) / totalMethodsLoc) * 100);
 	int veryHighRiskRatio = round((toReal(veryHighRiskSize) / totalMethodsLoc) * 100);
 	
-	println("Analysis of units size:
+	println("Analysis of unit size:
 	'	Percentage of low risk:		<lowRiskRatio>%
 	'	Percentage of moderate risk:	<modRiskRatio>%
 	'	Percentage of high risk:	<highRiskRatio>%
