@@ -31,23 +31,29 @@ public list[str] getCleanCode(loc location){
 	bool isInComment = false;
 	list[str] cleanCode = [];
     for(l <- readFileLines(location)){   
-    	if(/^\s*$/ := l || /^$/ := l || /\/\// := l || /import|package/ := l)
-       		continue;
-       	if(/\/\*/ := l) {
-       		if(/\*\// := l)
-       			continue;       			
-       		else{
+        l = trim(l);
+    	if(/^\s*$/ := l || /^$/ := l || /import|package/ := l) 
+       		continue; 
+       	if (!(/^\w/ := l) && (/\/\// := l))
+       	  continue;   	
+
+       	if( !(/^\w/ := l) && (/\/\*/ := l)) {
+       		if(/\*\// := l) {  
+       		    isInComment = false;
+       			continue; 
+       		}       			
+       		else{ 
        			isInComment = true;
        			continue;
        		}
        	}       	       	
-       	if(/\*\// := l) {
+       	if(isInComment && (/\*\// := l)) {
        		isInComment = false;
        		continue;
        	}
        	if(isInComment)
        		continue;
-       	cleanCode += trim(l);
+       	cleanCode += l;
     }
     return cleanCode;
  }
