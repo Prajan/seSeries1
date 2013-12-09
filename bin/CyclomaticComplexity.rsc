@@ -16,11 +16,27 @@ public list[tuple[str name, loc location, int complexity, int lofc]] getComplexi
 		case method(_, str methodName, _, _, Statement impl) : {
 			if(scanSrcOnly){
 				if(isSrcEntity(impl@src))
-					result += <methodName, impl@src, calculateComplexity(impl), calculateLoc(impl@src)>;
+					result += <methodName, impl@src, calculateCC(impl), calculateLoc(impl@src)>;
 			}								
 		}
 	}
 	return result;
+}
+
+public int calculateCC(Statement stat){
+	count = 1;
+	visit(stat){
+		case \if(_, _): count += 1;
+		case \if(_, _,_): count += 1;
+		case \case(_): count += 1;
+		case \foreach(_, _, _): count += 1;
+		case \for(_, _, _): count += 1;
+		case \for(_, _, _, _): count += 1;
+		case \do(_, _): count += 1;
+		case \while(_, _): count += 1;
+		case \catch(_, _): count += 1;			
+	}
+	return count;
 }
 
 public int calculateComplexity(Statement stat){
